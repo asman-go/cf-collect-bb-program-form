@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import itertools
 import typing
 
@@ -13,9 +14,11 @@ async def task(data, config: Config):
 
 def event_handler(event, context):
     config = Config()
-    asyncio.run(task(event, config))
-    return {
-        'response': {
-            'data': event
-        }
-    }
+    if 'body' in event:
+        data = base64.b64decode(event['body'])
+        asyncio.run(task(data, config))
+
+        return {'status': 'OK'}
+    
+    else:
+        return {'status': 'FAIL'}
