@@ -2,6 +2,7 @@ import boto3
 import typing
 
 from src.config import Config
+from src.models import Form
 
 
 class DocumentAPI(object):
@@ -31,15 +32,43 @@ class DocumentAPI(object):
                 TableName=PROGRAMMES_TABLE_NAME,
                 KeySchema=[
                     {
-                        'AttributeName': 'test',
+                        'AttributeName': 'program_site',
                         'KeyType': 'HASH'
                     }
                 ],
                 AttributeDefinitions=[
                     {
-                        'AttributeName': 'test',
+                        'AttributeName': 'program_name',
                         'AttributeType': 'S'
-                    }
+                    },
+                    {
+                        'AttributeName': 'program_site',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'platform',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'in_scope',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'mobile_scope',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'not_paid_scope',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'out_of_scope',
+                        'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'notes',
+                        'AttributeType': 'S'
+                    },
                 ],
                 ProvisionedThroughput={
                     'ReadCapacityUnits': 5,
@@ -52,11 +81,10 @@ class DocumentAPI(object):
         else:
             return self._resource.Table(PROGRAMMES_TABLE_NAME)
         
-    def upsert(self, data):
+    def upsert(self, data: Form):
         table = self.get_table()
         table.put_item(
             Item={
-                'test': "1",
-                'data': data
+                data.dict()
             }
         )
