@@ -29,8 +29,18 @@ class DocumentAPI(object):
         if PROGRAMMES_TABLE_NAME not in tables:
             table = self._resource.create_table(
                 TableName=PROGRAMMES_TABLE_NAME,
-                KeySchema=[],
-                AttributeDefinitions=[],
+                KeySchema=[
+                    {
+                        'AttributeName': 'test',
+                        'KeyType': 'HASH'
+                    }
+                ],
+                AttributeDefinitions=[
+                    {
+                        'AttributeName': 'test',
+                        'AttributeType': 'S'
+                    }
+                ],
                 ProvisionedThroughput={
                     'ReadCapacityUnits': 5,
                     'WriteCapacityUnits': 5
@@ -46,6 +56,7 @@ class DocumentAPI(object):
         table = self.get_table()
         table.put_item(
             Item={
+                'test': "1",
                 'data': data
             }
         )
