@@ -3,17 +3,28 @@ import base64
 import json
 
 from src.database import DocumentAPI
+from src.queue import SQS
 from src.config import Config
 from src.models import Form
 
 
 async def task(data, config: Config):
+    # 1. Store form to DynamoDB
+    print('Upload data to DynamoDB', data.program_name)
     dynamodb = DocumentAPI(config)
     dynamodb.upsert(data)
 
+    # 2. Send domains to SQS
+    sqs = SQS(config)
+    if data.in_scope:
+        domains = json.loads(data.in_scope)
+        print('Upload domains to SQS, count: ', len(domains))
+        for domain in domains:
+            sqs.send_message(domain.replace('\r', '').strip())
+
 
 def event_handler(event, context):
-    print('Event:', event)
+    # print('Event:', event)
     config = Config()
     if 'body' in event:
         data = base64.b64decode(event['body']).decode()
