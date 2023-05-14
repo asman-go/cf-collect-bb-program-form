@@ -32,16 +32,24 @@ def event_handler(event, context):
             form_data.program_site = data['Ссылка на BugBounty программу']
 
         if 'In scope' in data:
-            form_data.in_scope = data['In scope']
+            form_data.in_scope = json.dumps(
+                data['In scope'].split('\n')
+            )
 
         if 'Mobile Scope' in data:
-            form_data.mobile_scope = data['Mobile Scope']
+            form_data.mobile_scope = json.dumps(
+                data['Mobile Scope'].split('\n')
+            )
 
         if 'Not paid' in data:
-            form_data.not_paid_scope = data['Not paid']
+            form_data.not_paid_scope = json.dumps(
+                data['Not paid'].split('\n')
+            )
 
         if 'Out of scope' in data:
-            form_data.out_of_scope = data['Out of scope']
+            form_data.out_of_scope = json.dumps(
+                data['Out of scope'].split('\n')
+            )
 
         if 'Замечания' in data:
             form_data.notes = data['Замечания']
