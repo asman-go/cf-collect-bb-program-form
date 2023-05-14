@@ -84,7 +84,5 @@ class DocumentAPI(object):
     def upsert(self, data: Form):
         table = self.get_table()
         table.put_item(
-            Item={
-                data.dict()
-            }
+            Item=data.dict()
         )

@@ -16,7 +16,7 @@ def event_handler(event, context):
     config = Config()
     if 'body' in event:
         data = base64.b64decode(event['body']).decode()
-        data = base64.b64decode(data).decode()
+        # data = base64.b64decode(data).decode()
         data = json.loads(data)
 
         form_data = Form()
