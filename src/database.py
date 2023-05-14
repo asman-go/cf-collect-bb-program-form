@@ -82,6 +82,7 @@ class DocumentAPI(object):
             return self._resource.Table(PROGRAMMES_TABLE_NAME)
         
     def upsert(self, data: Form):
+        print('BB Form:', data)
         table = self.get_table()
         table.put_item(
             Item=data.dict()

@@ -13,6 +13,7 @@ async def task(data, config: Config):
 
 
 def event_handler(event, context):
+    print('Event:', event)
     config = Config()
     if 'body' in event:
         data = base64.b64decode(event['body']).decode()
