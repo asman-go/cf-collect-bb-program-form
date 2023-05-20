@@ -9,4 +9,5 @@ class Config(pydantic.BaseSettings):
     AWS_ACCESS_KEY_ID: str = "<key-id>"
     AWS_SECRET_ACCESS_KEY: str = "<secret-access-key>"
 
+    SQS_SERVER_ENDPOINT: str = 'https://message-queue.api.cloud.yandex.net'
     SQS_QUEUE_URL: str

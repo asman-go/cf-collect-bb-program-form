@@ -8,7 +8,7 @@ class SQS(object):
     def __init__(self, config: Config) -> None:
         self._client = boto3.client(
             'sqs',
-            endpoint_url='https://message-queue.api.cloud.yandex.net',
+            endpoint_url=config.SQS_SERVER_ENDPOINT,
             region_name=config.REGION_NAME
         )
 

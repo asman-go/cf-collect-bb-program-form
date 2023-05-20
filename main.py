@@ -6,6 +6,16 @@ from src.database import DocumentAPI
 from src.queue import SQS
 from src.config import Config
 from src.models import Form
+from src.constants import (
+    FORM_PROGRAM_NAME_FIELD,
+    FORM_BUGBOUNTY_PLATFORM_FIELD,
+    FORM_BUGBOUNTY_PROGRAM_URL,
+    FORM_IN_SCOPE_FIELD,
+    FORM_MOBILE_SCOPE_FIELD,
+    FORM_NOT_PAID_FIELD,
+    FORM_OUT_OF_SCOPE_FIELD,
+    FORM_NOTES_FIELD,
+)
 
 
 async def task(data, config: Config):
@@ -18,9 +28,14 @@ async def task(data, config: Config):
     sqs = SQS(config)
     if data.in_scope:
         domains = json.loads(data.in_scope)
+        domains = [
+            domain.replace('*.', '').replace('\r', '').strip() 
+            for domain in domains
+        ]
+        domains = list(set(domains))
         print('Upload domains to SQS, count: ', len(domains))
         for domain in domains:
-            sqs.send_message(domain.replace('\r', '').strip())
+            sqs.send_message(domain)
 
 
 def event_handler(event, context):
@@ -33,37 +48,37 @@ def event_handler(event, context):
 
         form_data = Form()
 
-        if 'Название Bug Bounty программы' in data:
-            form_data.program_name = data['Название Bug Bounty программы']
+        if FORM_PROGRAM_NAME_FIELD in data:
+            form_data.program_name = data[FORM_PROGRAM_NAME_FIELD]
 
-        if 'Bug Bounty платформа' in data:
-            form_data.platform = data['Bug Bounty платформа']
+        if FORM_BUGBOUNTY_PLATFORM_FIELD in data:
+            form_data.platform = data[FORM_BUGBOUNTY_PLATFORM_FIELD]
 
-        if 'Ссылка на BugBounty программу' in data:
-            form_data.program_site = data['Ссылка на BugBounty программу']
+        if FORM_BUGBOUNTY_PROGRAM_URL in data:
+            form_data.program_site = data[FORM_BUGBOUNTY_PROGRAM_URL]
 
-        if 'In scope' in data:
+        if FORM_IN_SCOPE_FIELD in data:
             form_data.in_scope = json.dumps(
-                data['In scope'].split('\n')
+                data[FORM_IN_SCOPE_FIELD].split('\n')
             )
 
-        if 'Mobile Scope' in data:
+        if FORM_MOBILE_SCOPE_FIELD in data:
             form_data.mobile_scope = json.dumps(
-                data['Mobile Scope'].split('\n')
+                data[FORM_MOBILE_SCOPE_FIELD].split('\n')
             )
 
-        if 'Not paid' in data:
+        if FORM_NOT_PAID_FIELD in data:
             form_data.not_paid_scope = json.dumps(
-                data['Not paid'].split('\n')
+                data[FORM_NOT_PAID_FIELD].split('\n')
             )
 
-        if 'Out of scope' in data:
+        if FORM_OUT_OF_SCOPE_FIELD in data:
             form_data.out_of_scope = json.dumps(
-                data['Out of scope'].split('\n')
+                data[FORM_OUT_OF_SCOPE_FIELD].split('\n')
             )
 
-        if 'Замечания' in data:
-            form_data.notes = data['Замечания']
+        if FORM_NOTES_FIELD in data:
+            form_data.notes = data[FORM_NOTES_FIELD]
 
         asyncio.run(task(form_data, config))
 
