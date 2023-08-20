@@ -38,6 +38,44 @@ async def task(data, config: Config):
             sqs.send_message(domain)
 
 
+def handle_form(data):
+    form_data = Form()
+
+    if FORM_PROGRAM_NAME_FIELD in data:
+        form_data.program_name = data[FORM_PROGRAM_NAME_FIELD]
+
+    if FORM_BUGBOUNTY_PLATFORM_FIELD in data:
+        form_data.platform = data[FORM_BUGBOUNTY_PLATFORM_FIELD]
+
+    if FORM_BUGBOUNTY_PROGRAM_URL in data:
+        form_data.program_site = data[FORM_BUGBOUNTY_PROGRAM_URL]
+
+    if FORM_IN_SCOPE_FIELD in data:
+        form_data.in_scope = json.dumps(
+            data[FORM_IN_SCOPE_FIELD].split('\n')
+        )
+
+    if FORM_MOBILE_SCOPE_FIELD in data:
+        form_data.mobile_scope = json.dumps(
+            data[FORM_MOBILE_SCOPE_FIELD].split('\n')
+        )
+
+    if FORM_NOT_PAID_FIELD in data:
+        form_data.not_paid_scope = json.dumps(
+            data[FORM_NOT_PAID_FIELD].split('\n')
+        )
+
+    if FORM_OUT_OF_SCOPE_FIELD in data:
+        form_data.out_of_scope = json.dumps(
+            data[FORM_OUT_OF_SCOPE_FIELD].split('\n')
+        )
+
+    if FORM_NOTES_FIELD in data:
+        form_data.notes = data[FORM_NOTES_FIELD]
+
+    return form_data
+
+
 def event_handler(event, context):
     # print('Event:', event)
     config = Config()
@@ -45,40 +83,7 @@ def event_handler(event, context):
         data = base64.b64decode(event['body']).decode()
         # data = base64.b64decode(data).decode()
         data = json.loads(data)
-
-        form_data = Form()
-
-        if FORM_PROGRAM_NAME_FIELD in data:
-            form_data.program_name = data[FORM_PROGRAM_NAME_FIELD]
-
-        if FORM_BUGBOUNTY_PLATFORM_FIELD in data:
-            form_data.platform = data[FORM_BUGBOUNTY_PLATFORM_FIELD]
-
-        if FORM_BUGBOUNTY_PROGRAM_URL in data:
-            form_data.program_site = data[FORM_BUGBOUNTY_PROGRAM_URL]
-
-        if FORM_IN_SCOPE_FIELD in data:
-            form_data.in_scope = json.dumps(
-                data[FORM_IN_SCOPE_FIELD].split('\n')
-            )
-
-        if FORM_MOBILE_SCOPE_FIELD in data:
-            form_data.mobile_scope = json.dumps(
-                data[FORM_MOBILE_SCOPE_FIELD].split('\n')
-            )
-
-        if FORM_NOT_PAID_FIELD in data:
-            form_data.not_paid_scope = json.dumps(
-                data[FORM_NOT_PAID_FIELD].split('\n')
-            )
-
-        if FORM_OUT_OF_SCOPE_FIELD in data:
-            form_data.out_of_scope = json.dumps(
-                data[FORM_OUT_OF_SCOPE_FIELD].split('\n')
-            )
-
-        if FORM_NOTES_FIELD in data:
-            form_data.notes = data[FORM_NOTES_FIELD]
+        form_data = handle_form(data)
 
         asyncio.run(task(form_data, config))
 
